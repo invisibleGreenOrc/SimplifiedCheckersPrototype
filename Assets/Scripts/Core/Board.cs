@@ -25,8 +25,8 @@ namespace Checkers.Core
 
             Chips = new Dictionary<int, Chip>()
             {
-                { 1, new Chip(ColorType.White, 0, 2) },
                 { 0, new Chip(ColorType.White, 0, 0) },
+                { 1, new Chip(ColorType.White, 0, 2) },
                 { 2, new Chip(ColorType.White, 0, 4) },
                 { 3, new Chip(ColorType.White, 0, 6) },
                 { 4, new Chip(ColorType.White, 1, 1) },

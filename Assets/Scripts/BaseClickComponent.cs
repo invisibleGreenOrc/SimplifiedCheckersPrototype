@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Checkers.Core;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -97,12 +98,6 @@ namespace Checkers
             _meshMaterials[0] = _mesh.material;
         }
 	}
-
-    public enum ColorType
-    {
-        White,
-        Black
-    }
 
     public delegate void ClickEventHandler(BaseClickComponent component);
     public delegate void FocusEventHandler(CellComponent component, bool isSelect);

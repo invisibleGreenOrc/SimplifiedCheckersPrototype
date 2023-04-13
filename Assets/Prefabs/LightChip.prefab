@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5831931445748086921}
   - component: {fileID: 429280549656263033}
   - component: {fileID: 436386753469960648}
+  - component: {fileID: -6940912184681441226}
   m_Layer: 0
   m_Name: LightChip
   m_TagString: Untagged
@@ -97,3 +98,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _color: 0
+--- !u!136 &-6940912184681441226
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8530132186425137051}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.50000006
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.00000005960464, y: -0.75, z: -0.00000008940696}

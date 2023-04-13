@@ -316,7 +316,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_EventMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2147483647
   m_MaxRayIntersections: 0
 --- !u!1 &1306128977
 GameObject:
@@ -417,12 +417,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cellPrefabsForInput:
   - Color: 0
-    CellPrefab: {fileID: 6966117586429799826, guid: f9a92a755da9e054286913365b8ccea9, type: 3}
+    Prefab: {fileID: 6966117586429799826, guid: f9a92a755da9e054286913365b8ccea9, type: 3}
   - Color: 1
-    CellPrefab: {fileID: 1714759260093776670, guid: 84b332edd68951240810b2bb2dfe7f2e, type: 3}
+    Prefab: {fileID: 1714759260093776670, guid: 84b332edd68951240810b2bb2dfe7f2e, type: 3}
   _cellSideLength: 1
-  _lightChipPrefab: {fileID: 436386753469960648, guid: 5684be0bc6c0a504285c57f17599335d, type: 3}
-  _darkChipPrefab: {fileID: 2828011909747291465, guid: 98313ec6cde49cf4683ce4d479743265, type: 3}
+  _chipPrefabsForInput:
+  - Color: 0
+    Prefab: {fileID: 436386753469960648, guid: 5684be0bc6c0a504285c57f17599335d, type: 3}
+  - Color: 1
+    Prefab: {fileID: 2828011909747291465, guid: 98313ec6cde49cf4683ce4d479743265, type: 3}
+  _highlightMaterial: {fileID: 2100000, guid: bac5726f24c09d042b2d8b4a1e1acb4b, type: 2}
+  _selectMaterial: {fileID: 2100000, guid: 85e557673fec4db4fb7ad6384d067e64, type: 2}
 --- !u!4 &1655979874
 Transform:
   m_ObjectHideFlags: 0
@@ -431,7 +436,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1655979872}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.17080688, y: 0.31467044, z: 0.49208963}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
