@@ -1,6 +1,6 @@
 ﻿namespace Checkers.Core
 {
-    public enum Color
+    public enum ColorType
     {
         White,
         Black
