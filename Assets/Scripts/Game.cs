@@ -1,7 +1,9 @@
 ﻿using Checkers.Core;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Checkers
 {
@@ -35,8 +37,12 @@ namespace Checkers
 
         private List<CellComponent> _allowedToMoveCells =new();
 
+        private PhysicsRaycaster _raycaster;
+
         private void Start()
         {
+            _raycaster = FindObjectOfType<PhysicsRaycaster>();
+
             foreach (BoardElementPrefab<CellComponent> prefab in _cellPrefabsForInput)
             {
                 _cellPrefabs.Add(prefab.Color, prefab.Prefab);
@@ -114,9 +120,10 @@ namespace Checkers
         {
             if (clickedComponent is CellComponent cell && _activeChip != null)
             {
-                if (_board.TryMoveChip(_activeChip.Id, new Core.Position() { X = cell.Coordinates.X, Y = cell.Coordinates.Y }))
+                if (_board.TryMoveChip(_activeChip.Id, new Position() { X = cell.Coordinates.X, Y = cell.Coordinates.Y }))
                 {
-                    _activeChip.transform.position = new Vector3(cell.transform.position.x, 0.2f, cell.transform.position.z);
+                    StartCoroutine(MoveToTarget(_activeChip, new Vector3(cell.transform.position.x, 0.2f, cell.transform.position.z)));
+
                     _activeChip.Pair = cell;
                     _activeChip.RemoveAdditionalMaterial();
                     _activeChip = null;
@@ -161,6 +168,20 @@ namespace Checkers
             {
                 component.RemoveAdditionalMaterial();
             }
+        }
+
+        private IEnumerator MoveToTarget(ChipComponent chip,  Vector3 target)
+        {
+            _raycaster.enabled = false;
+
+            while (chip.transform.position != target)
+            {
+                chip.transform.position = Vector3.MoveTowards(chip.transform.position, target, 5f * Time.deltaTime);
+
+                yield return null;
+            }
+
+            _raycaster.enabled = true;
         }
     }
 }
