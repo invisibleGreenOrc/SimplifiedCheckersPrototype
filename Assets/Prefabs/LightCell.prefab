@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6966117586429799827}
   - component: {fileID: 6966117586429799826}
   - component: {fileID: 7130456307360614552}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: LightCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}

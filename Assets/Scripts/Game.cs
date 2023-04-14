@@ -1,9 +1,6 @@
 ﻿using Checkers.Core;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Checkers
@@ -13,10 +10,13 @@ namespace Checkers
         [SerializeField]
         private BoardElementPrefab<CellComponent>[] _cellPrefabsForInput;
 
-        private Dictionary<ColorType, CellComponent> _cellPrefabs = new();
-
         [SerializeField]
         private int _cellSideLength;
+        
+        private Dictionary<ColorType, CellComponent> _cellPrefabs = new();
+
+        private List<CellComponent> _cells = new();
+        private List<ChipComponent> _chips = new();
 
         [SerializeField]
         private BoardElementPrefab<ChipComponent>[] _chipPrefabsForInput;
@@ -28,6 +28,12 @@ namespace Checkers
 
         [SerializeField]
         private Material _selectMaterial;
+
+        private ChipComponent _activeChip;
+
+        private Board _board;
+
+        private List<CellComponent> _allowedToMoveCells =new();
 
         private void Start()
         {
@@ -44,39 +50,115 @@ namespace Checkers
             CreateBoard();
         }
 
+        private void OnDestroy()
+        {
+            _board.ChipRemoved -= RemoveChip;
+        }
+
         private void CreateBoard()
         {
-            var boardModel = new Board();
+            _board = new Board();
 
-            for (int x = 0; x < boardModel.Cells.GetLength(0); x++)
+            _board.ChipRemoved += RemoveChip;
+
+            for (int x = 0; x < _board.Cells.GetLength(0); x++)
             {
-                for (int y = 0; y < boardModel.Cells.GetLength(1); y++)
+                for (int y = 0; y < _board.Cells.GetLength(1); y++)
                 {
-                    CellComponent newCell = CreateCell((ColorType)boardModel.Cells[x, y], new Vector2 (y * _cellSideLength, x * _cellSideLength));
-                    newCell.OnClickEventHandler += OnClick;
+                    CreateCell((ColorType)_board.Cells[x, y], x, y);
                 }
             }
 
-            foreach (Chip chip in boardModel.Chips.Values)
+            CreateChips();
+        }
+
+        private CellComponent CreateCell(ColorType color, int xCoordinate, int yCoordinate)
+        {
+            var position = new Vector3(yCoordinate * _cellSideLength, 0f,  xCoordinate * _cellSideLength);
+            CellComponent newCell = Instantiate(_cellPrefabs[color], position, Quaternion.identity, transform);
+
+            newCell.Coordinates = new Core.Position() { X = xCoordinate, Y = yCoordinate };
+            _cells.Add(newCell);
+
+            newCell.OnClickEventHandler += OnClick;
+            newCell.OnFocusEventHandler += Highlight;
+
+            return newCell;
+        }
+
+        private void CreateChips()
+        {
+            foreach (KeyValuePair<int, Chip> chip in _board.ChipsOnBoard)
             {
-                ChipComponent newChip = CreateChip(chip.Color, new Vector2(chip.Position.Y * _cellSideLength, chip.Position.X * _cellSideLength));
+                var position = new Vector3(chip.Value.Position.Y, 0.2f, chip.Value.Position.X);
+                ChipComponent newChip = Instantiate(_chipPrefabs[chip.Value.Color], position, Quaternion.identity, transform);
+
+                newChip.Id = chip.Key;
+                newChip.Chip = chip.Value;
+                newChip.Pair = _cells.Where(cell => cell.Coordinates.X == chip.Value.Position.X && cell.Coordinates.Y == chip.Value.Position.Y).FirstOrDefault();
+
                 newChip.OnClickEventHandler += OnClick;
+                newChip.OnFocusEventHandler += Highlight;
             }
         }
 
-        private CellComponent CreateCell(ColorType color, Vector2 position)
+        private void RemoveChip(int id)
         {
-            return Instantiate(_cellPrefabs[color], new Vector3(position.x, 0f, position.y), Quaternion.identity, transform);
-        }
-
-        private ChipComponent CreateChip(ColorType color, Vector2 position)
-        {
-            return Instantiate(_chipPrefabs[color], new Vector3(position.x, 0.2f, position.y), Quaternion.identity, transform);
+            ChipComponent chipToRemove = _chips.Where(chip => chip.Id == id).FirstOrDefault();
+            _chips.Remove(chipToRemove);
         }
 
         private void OnClick(BaseClickComponent clickedComponent)
         {
-            clickedComponent.AddAdditionalMaterial(_highlightMaterial);
+            if (clickedComponent is CellComponent cell && _activeChip != null)
+            {
+                if (_board.TryMoveChip(_activeChip.Id, new Core.Position() { X = cell.Coordinates.X, Y = cell.Coordinates.Y }))
+                {
+                    _activeChip.transform.position = new Vector3(cell.transform.position.x, 0.2f, cell.transform.position.z);
+                    _activeChip.Pair = cell;
+                    _activeChip.RemoveAdditionalMaterial();
+                    _activeChip = null;
+                }
+            }
+            else if (clickedComponent is ChipComponent chip)
+            {
+                if (_activeChip != null)
+                {
+                    _activeChip.RemoveAdditionalMaterial();
+
+                    foreach (var item in _allowedToMoveCells)
+                    {
+                        item.RemoveAdditionalMaterial();
+                    }
+                    _allowedToMoveCells = new();
+                }
+
+                _activeChip = chip;
+                chip.AddAdditionalMaterial(_selectMaterial);
+
+                foreach (var item in _board.GetAllowedPositionsToMoveChip(_activeChip.Id))
+                {
+                    var s = _cells.Where(cell => cell.Coordinates.X == item.X && cell.Coordinates.Y == item.Y).ToList();
+                    _allowedToMoveCells.AddRange(s);
+                }
+
+                foreach (var item in _allowedToMoveCells)
+                {
+                    item.AddAdditionalMaterial(_selectMaterial);
+                }
+            }
+        }
+
+        private void Highlight(CellComponent component, bool isSelect)
+        {
+            if (isSelect)
+            {
+                component.AddAdditionalMaterial(_highlightMaterial);
+            }
+            else
+            {
+                component.RemoveAdditionalMaterial();
+            }
         }
     }
 }

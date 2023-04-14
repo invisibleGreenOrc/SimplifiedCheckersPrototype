@@ -12,6 +12,9 @@ namespace Checkers
         /// </summary>
         /// <param name="type">Перечисление направления</param>
         /// <returns>Клетка-сосед или null</returns>
+
+        public Core.Position Coordinates { get; set; }
+
         public CellComponent GetNeighbors(NeighborType type) => _neighbors[type];
 
         public override void OnPointerEnter(PointerEventData eventData)

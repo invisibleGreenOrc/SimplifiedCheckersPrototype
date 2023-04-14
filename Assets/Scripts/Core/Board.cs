@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Checkers.Core
@@ -7,7 +8,13 @@ namespace Checkers.Core
     {
         public int[,] Cells { get; private set; }
 
-        public Dictionary<int, Chip> Chips { get; private set; }
+        public Dictionary<int, Chip> ChipsOnBoard { get; private set; }
+
+        public ColorType ActivePlayerColor { get; private set; } = ColorType.White;
+
+        public event Action<int> ChipRemoved;
+
+        private Dictionary<ColorType, Position[]> _allowedMoveDirections;
 
         public Board()
         {
@@ -23,7 +30,7 @@ namespace Checkers.Core
                 { 0, 1, 0, 1, 0, 1, 0, 1 }
             };
 
-            Chips = new Dictionary<int, Chip>()
+            ChipsOnBoard = new Dictionary<int, Chip>()
             {
                 { 0, new Chip(ColorType.White, 0, 0) },
                 { 1, new Chip(ColorType.White, 0, 2) },
@@ -50,24 +57,35 @@ namespace Checkers.Core
                 { 22, new Chip(ColorType.Black, 7, 5) },
                 { 23, new Chip(ColorType.Black, 7, 7) },
             };
+
+            _allowedMoveDirections = new Dictionary<ColorType, Position[]>()
+            {
+                { ColorType.White, new Position[]{ new Position(1, -1), new Position(1, 1)} },
+                { ColorType.Black, new Position[]{ new Position(-1, -1), new Position(-1, 1)} },
+            };
         }
 
         public void RemoveChip(int id)
         {
-            Chips.Remove(id);
+            if (ChipsOnBoard.Remove(id))
+            {
+                ChipRemoved?.Invoke(id);
+            }
         }
 
-        public bool TryMoveChip(int checkerId, Position newPosition)
+        public bool TryMoveChip(int chipId, Position newPosition)
         {
-            if (IsPositionInBoard(newPosition) is false)
+            if (ChipsOnBoard.TryGetValue(chipId, out var chip) && (chip.Color == ActivePlayerColor))
             {
-                return false;
-            }
+                var allowedPositions = GetAllowedPositionsToMoveChip(chipId);
 
-            if (Chips.TryGetValue(checkerId, out var checker))
-            {
-                checker.Position = newPosition;
-                return true;
+                if (allowedPositions.Contains(newPosition))
+                {
+                    chip.Position = newPosition;
+                    PassTurnToNextPlayer();
+
+                    return true;
+                }
             }
 
             return false;
@@ -80,8 +98,45 @@ namespace Checkers.Core
 
         public bool IsCellFree(Position position)
         {
-            bool isChipOnCell = Chips.Values.Select(checker => checker.Position).Contains(position);
+            bool isChipOnCell = ChipsOnBoard.Values.Select(chip => chip.Position).Contains(position);
             return !isChipOnCell;
+        }
+
+        public List<Position> GetAllowedPositionsToMoveChip(int chipId)
+        {
+            var allowedPositions = new List<Position>();
+
+            if (ChipsOnBoard.TryGetValue(chipId, out var chip))
+            {
+                foreach (Position position in _allowedMoveDirections[chip.Color])
+                {
+                    var consideredPosition = new Position() { X = chip.Position.X + position.X, Y = chip.Position.Y + position.Y };
+
+                    if (IsPositionInBoard(consideredPosition))
+                    {
+                        if (IsCellFree(consideredPosition))
+                        {
+                            allowedPositions.Add(consideredPosition);
+                        }
+                        else if (ChipsOnBoard.Values.Where(chip => chip.Position == consideredPosition).FirstOrDefault().Color != chip.Color)
+                        {
+                            consideredPosition = new Position() { X = consideredPosition.X + position.X, Y = consideredPosition.Y + position.Y };
+
+                            if (IsPositionInBoard(consideredPosition) && IsCellFree(consideredPosition))
+                            {
+                                allowedPositions.Add(consideredPosition);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return allowedPositions;
+        }
+
+        private void PassTurnToNextPlayer()
+        {
+            ActivePlayerColor = (ColorType)(((int)ActivePlayerColor + 1) % 2);
         }
     }
 }
