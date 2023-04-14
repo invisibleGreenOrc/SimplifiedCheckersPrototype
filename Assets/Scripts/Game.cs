@@ -77,7 +77,7 @@ namespace Checkers
             var position = new Vector3(yCoordinate * _cellSideLength, 0f,  xCoordinate * _cellSideLength);
             CellComponent newCell = Instantiate(_cellPrefabs[color], position, Quaternion.identity, transform);
 
-            newCell.Coordinates = new Core.Position() { X = xCoordinate, Y = yCoordinate };
+            newCell.Coordinates = new Position() { X = xCoordinate, Y = yCoordinate };
             _cells.Add(newCell);
 
             newCell.OnClickEventHandler += OnClick;
@@ -96,6 +96,7 @@ namespace Checkers
                 newChip.Id = chip.Key;
                 newChip.Chip = chip.Value;
                 newChip.Pair = _cells.Where(cell => cell.Coordinates.X == chip.Value.Position.X && cell.Coordinates.Y == chip.Value.Position.Y).FirstOrDefault();
+                _chips.Add(newChip);
 
                 newChip.OnClickEventHandler += OnClick;
                 newChip.OnFocusEventHandler += Highlight;
@@ -106,6 +107,7 @@ namespace Checkers
         {
             ChipComponent chipToRemove = _chips.Where(chip => chip.Id == id).FirstOrDefault();
             _chips.Remove(chipToRemove);
+            Destroy(chipToRemove.gameObject);
         }
 
         private void OnClick(BaseClickComponent clickedComponent)

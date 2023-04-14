@@ -81,6 +81,14 @@ namespace Checkers.Core
 
                 if (allowedPositions.Contains(newPosition))
                 {
+                    // Сделать нормально
+                    if (Math.Abs(chip.Position.X - newPosition.X) > 1)
+                    {
+                        var chipToRemove = ChipsOnBoard.Where(item => item.Value.Position == new Position((chip.Position.X + newPosition.X) / 2, (chip.Position.Y + newPosition.Y) / 2)).FirstOrDefault();
+
+                        RemoveChip(chipToRemove.Key);
+                    }
+
                     chip.Position = newPosition;
                     PassTurnToNextPlayer();
 
