@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Checkers.Core
 {
@@ -10,6 +11,8 @@ namespace Checkers.Core
         private List<Chip> _startChipsPosition;
         
         private Dictionary<ColorType, Position[]> _allowedMoveDirections;
+
+        private Dictionary<ColorType, Position[]> _winPositions;
         
         public event Action<ColorType> PlayerWon;
 
@@ -56,6 +59,18 @@ namespace Checkers.Core
                 {new Chip(22, ColorType.Black, 7, 5) },
                 {new Chip(23, ColorType.Black, 7, 7) },
             };
+
+            _winPositions = new Dictionary<ColorType, Position[]>()
+            {
+                { ColorType.White, new Position[7] },
+                { ColorType.Black, new Position[7] },
+            };
+
+            for (var i = 0; i < 7; i++)
+            {
+                _winPositions[ColorType.Black][i] = new Position(0, i);
+                _winPositions[ColorType.White][i] = new Position(7, i);
+            }
         }
 
         public void StartNewGame()
@@ -89,7 +104,7 @@ namespace Checkers.Core
                         RemoveChip(chipToRemove.Id);
                     }
 
-                    _board.MoveChip(chipToMove.Id, positionToMove);
+                    MoveChip(chipToMove.Id, positionToMove);
                     PassTurnToNextPlayer();
 
                     return true;
@@ -155,6 +170,18 @@ namespace Checkers.Core
                 {
                     PlayerWon?.Invoke(ActivePlayerColor);
                 }
+            }
+        }
+
+        private void MoveChip(int chipId, Position positionToMove)
+        {
+            _board.MoveChip(chipId, positionToMove);
+
+            Chip movedChip = _board.GetChip(chipId);
+
+            if (_winPositions[movedChip.Color].Contains(movedChip.Position))
+            {
+                PlayerWon?.Invoke(movedChip.Color);
             }
         }
     }

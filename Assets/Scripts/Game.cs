@@ -70,6 +70,13 @@ namespace Checkers
             _checkerGame.ChipRemoved += RemoveChip;
             _checkerGame.PlayerWon += CongratsPlayer;
 
+            CreateBoard();
+
+            CreateChips();
+        }
+
+        private void CreateBoard()
+        {
             for (int x = 0; x < _checkerGame.BoardCells.GetLength(0); x++)
             {
                 for (int y = 0; y < _checkerGame.BoardCells.GetLength(1); y++)
@@ -77,8 +84,6 @@ namespace Checkers
                     CreateCell((ColorType)_checkerGame.BoardCells[x, y], x, y);
                 }
             }
-
-            CreateChips();
         }
 
         private CellComponent CreateCell(ColorType color, int xCoordinate, int yCoordinate)
