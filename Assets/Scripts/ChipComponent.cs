@@ -1,13 +1,10 @@
-﻿using Checkers.Core;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
 namespace Checkers
 {
     public class ChipComponent : BaseClickComponent
     {
         public int Id { get; set; }
-
-        public Chip Chip { get; set; }
 
         public override void OnPointerEnter(PointerEventData eventData)
         {
