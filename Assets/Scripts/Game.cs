@@ -33,7 +33,7 @@ namespace Checkers
 
         private ChipComponent _activeChip;
 
-        private Board _board;
+        private CheckersGame _checkerGame;
 
         private List<CellComponent> _allowedToMoveCells =new();
 
@@ -53,27 +53,28 @@ namespace Checkers
                 _chipPrefabs.Add(prefab.Color, prefab.Prefab);
             }
 
-            CreateBoard();
+            StartGame();
         }
 
         private void OnDestroy()
         {
-            _board.ChipRemoved -= RemoveChip;
-            _board.PlayerWon -= CongratsPlayer;
+            _checkerGame.ChipRemoved -= RemoveChip;
+            _checkerGame.PlayerWon -= CongratsPlayer;
         }
 
-        private void CreateBoard()
+        private void StartGame()
         {
-            _board = new Board();
+            _checkerGame = new CheckersGame();
+            _checkerGame.StartNewGame();
 
-            _board.ChipRemoved += RemoveChip;
-            _board.PlayerWon += CongratsPlayer;
+            _checkerGame.ChipRemoved += RemoveChip;
+            _checkerGame.PlayerWon += CongratsPlayer;
 
-            for (int x = 0; x < _board.Cells.GetLength(0); x++)
+            for (int x = 0; x < _checkerGame.BoardCells.GetLength(0); x++)
             {
-                for (int y = 0; y < _board.Cells.GetLength(1); y++)
+                for (int y = 0; y < _checkerGame.BoardCells.GetLength(1); y++)
                 {
-                    CreateCell((ColorType)_board.Cells[x, y], x, y);
+                    CreateCell((ColorType)_checkerGame.BoardCells[x, y], x, y);
                 }
             }
 
@@ -96,7 +97,7 @@ namespace Checkers
 
         private void CreateChips()
         {
-            foreach (Chip chip in _board.ChipsOnBoard)
+            foreach (Chip chip in _checkerGame.ChipsOnBoard)
             {
                 var position = new Vector3(chip.Position.Y, 0.2f, chip.Position.X);
                 ChipComponent newChip = Instantiate(_chipPrefabs[chip.Color], position, Quaternion.identity, transform);
@@ -122,7 +123,7 @@ namespace Checkers
         {
             if (clickedComponent is CellComponent cell && _activeChip != null)
             {
-                if (_board.TryMoveChip(_activeChip.Id, new Position() { X = cell.Coordinates.X, Y = cell.Coordinates.Y }))
+                if (_checkerGame.TryMakeMove(_activeChip.Id, new Position() { X = cell.Coordinates.X, Y = cell.Coordinates.Y }))
                 {
                     StartCoroutine(MoveToTarget(_activeChip, new Vector3(cell.transform.position.x, 0.2f, cell.transform.position.z)));
 
@@ -147,7 +148,7 @@ namespace Checkers
                 _activeChip = chip;
                 chip.AddAdditionalMaterial(_selectMaterial);
 
-                foreach (var item in _board.GetAllowedPositionsToMoveChip(_activeChip.Id))
+                foreach (var item in _checkerGame.GetAllowedPositionsToMoveChip(_activeChip.Id))
                 {
                     var s = _cells.Where(cell => cell.Coordinates.X == item.X && cell.Coordinates.Y == item.Y).ToList();
                     _allowedToMoveCells.AddRange(s);
