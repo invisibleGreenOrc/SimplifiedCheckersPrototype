@@ -71,7 +71,6 @@ namespace Checkers
             _checkerGame.PlayerWon += CongratsPlayer;
 
             CreateBoard();
-
             CreateChips();
         }
 
@@ -134,6 +133,13 @@ namespace Checkers
                     _activeChip.Pair = cell;
                     _activeChip.RemoveAdditionalMaterial();
                     _activeChip = null;
+
+                    foreach (var item in _allowedToMoveCells)
+                    {
+                        item.RemoveAdditionalMaterial(2);
+                    }
+
+                    _allowedToMoveCells.Clear();
                 }
             }
             else if (clickedComponent is ChipComponent chip)
@@ -144,7 +150,7 @@ namespace Checkers
 
                     foreach (var item in _allowedToMoveCells)
                     {
-                        item.RemoveAdditionalMaterial();
+                        item.RemoveAdditionalMaterial(2);
                     }
                     _allowedToMoveCells = new();
                 }
@@ -160,7 +166,7 @@ namespace Checkers
 
                 foreach (var item in _allowedToMoveCells)
                 {
-                    item.AddAdditionalMaterial(_selectMaterial);
+                    item.AddAdditionalMaterial(_selectMaterial, 2);
                 }
             }
         }
