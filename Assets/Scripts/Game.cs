@@ -96,14 +96,14 @@ namespace Checkers
 
         private void CreateChips()
         {
-            foreach (KeyValuePair<int, Chip> chip in _board.ChipsOnBoard)
+            foreach (Chip chip in _board.ChipsOnBoard)
             {
-                var position = new Vector3(chip.Value.Position.Y, 0.2f, chip.Value.Position.X);
-                ChipComponent newChip = Instantiate(_chipPrefabs[chip.Value.Color], position, Quaternion.identity, transform);
+                var position = new Vector3(chip.Position.Y, 0.2f, chip.Position.X);
+                ChipComponent newChip = Instantiate(_chipPrefabs[chip.Color], position, Quaternion.identity, transform);
 
-                newChip.Id = chip.Key;
-                newChip.Chip = chip.Value;
-                newChip.Pair = _cells.Where(cell => cell.Coordinates.X == chip.Value.Position.X && cell.Coordinates.Y == chip.Value.Position.Y).FirstOrDefault();
+                newChip.Id = chip.Id;
+                newChip.Chip = chip;
+                newChip.Pair = _cells.Where(cell => cell.Coordinates.X == chip.Position.X && cell.Coordinates.Y == chip.Position.Y).FirstOrDefault();
                 _chips.Add(newChip);
 
                 newChip.OnClickEventHandler += OnClick;
