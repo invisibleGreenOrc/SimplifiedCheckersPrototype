@@ -14,6 +14,8 @@ namespace Checkers.Core
 
         public event Action<int> ChipRemoved;
 
+        public event Action<ColorType> PlayerWon;
+
         private Dictionary<ColorType, Position[]> _allowedMoveDirections;
 
         public Board()
@@ -67,9 +69,19 @@ namespace Checkers.Core
 
         public void RemoveChip(int id)
         {
+            ChipsOnBoard.TryGetValue(id, out Chip chip);
+            var removeChipColor = chip.Color;
+
             if (ChipsOnBoard.Remove(id))
             {
                 ChipRemoved?.Invoke(id);
+
+                int chipsLeft = ChipsOnBoard.Values.Where(item => item.Color == removeChipColor).Count();
+
+                if (chipsLeft <= 0)
+                {
+                    PlayerWon?.Invoke(ActivePlayerColor);
+                }
             }
         }
 

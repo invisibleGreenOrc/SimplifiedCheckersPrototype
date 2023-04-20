@@ -59,6 +59,7 @@ namespace Checkers
         private void OnDestroy()
         {
             _board.ChipRemoved -= RemoveChip;
+            _board.PlayerWon -= CongratsPlayer;
         }
 
         private void CreateBoard()
@@ -66,6 +67,7 @@ namespace Checkers
             _board = new Board();
 
             _board.ChipRemoved += RemoveChip;
+            _board.PlayerWon += CongratsPlayer;
 
             for (int x = 0; x < _board.Cells.GetLength(0); x++)
             {
@@ -182,6 +184,11 @@ namespace Checkers
             }
 
             _raycaster.enabled = true;
+        }
+
+        private void CongratsPlayer(ColorType color)
+        {
+            Debug.Log(color.ToString());
         }
     }
 }
