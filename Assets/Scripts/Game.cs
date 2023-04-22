@@ -134,9 +134,9 @@ namespace Checkers
                     _activeChip.RemoveAdditionalMaterial();
                     _activeChip = null;
 
-                    foreach (var item in _allowedToMoveCells)
+                    foreach (CellComponent cellToRemoveMaterial in _allowedToMoveCells)
                     {
-                        item.RemoveAdditionalMaterial(2);
+                        cellToRemoveMaterial.RemoveAdditionalMaterial(2);
                     }
 
                     _allowedToMoveCells.Clear();
@@ -144,13 +144,19 @@ namespace Checkers
             }
             else if (clickedComponent is ChipComponent chip)
             {
+                if (chip.GetColor != _checkerGame.ActivePlayerColor)
+                {
+                    Debug.LogWarning($"Now it's the {_checkerGame.ActivePlayerColor} player's turn");
+                    return;
+                }
+
                 if (_activeChip != null)
                 {
                     _activeChip.RemoveAdditionalMaterial();
 
-                    foreach (var item in _allowedToMoveCells)
+                    foreach (CellComponent cellToRemoveMaterial in _allowedToMoveCells)
                     {
-                        item.RemoveAdditionalMaterial(2);
+                        cellToRemoveMaterial.RemoveAdditionalMaterial(2);
                     }
                     _allowedToMoveCells = new();
                 }
@@ -158,15 +164,15 @@ namespace Checkers
                 _activeChip = chip;
                 chip.AddAdditionalMaterial(_selectMaterial);
 
-                foreach (var item in _checkerGame.GetAllowedPositionsToMoveChip(_activeChip.Id))
+                foreach (Position position in _checkerGame.GetAllowedPositionsToMoveChip(_activeChip.Id))
                 {
-                    var s = _cells.Where(cell => cell.Coordinates.X == item.X && cell.Coordinates.Y == item.Y).ToList();
-                    _allowedToMoveCells.AddRange(s);
+                    var cells = _cells.Where(cell => cell.Coordinates.X == position.X && cell.Coordinates.Y == position.Y);
+                    _allowedToMoveCells.AddRange(cells);
                 }
 
-                foreach (var item in _allowedToMoveCells)
+                foreach (CellComponent cellToAddMaterial in _allowedToMoveCells)
                 {
-                    item.AddAdditionalMaterial(_selectMaterial, 2);
+                    cellToAddMaterial.AddAdditionalMaterial(_selectMaterial, 2);
                 }
             }
         }
@@ -199,7 +205,7 @@ namespace Checkers
 
         private void CongratsPlayer(ColorType color)
         {
-            Debug.Log(color.ToString());
+            Debug.Log($"Winning player - {color}");
         }
     }
 }

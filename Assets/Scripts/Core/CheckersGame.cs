@@ -8,11 +8,11 @@ namespace Checkers.Core
     {
         private Board _board;
 
-        private List<Chip> _startChipsPosition;
+        private readonly List<Chip> _startChipsPosition;
         
-        private Dictionary<ColorType, Position[]> _allowedMoveDirections;
+        private readonly Dictionary<ColorType, Position[]> _allowedMoveDirections;
 
-        private Dictionary<ColorType, Position[]> _winPositions;
+        private readonly Dictionary<ColorType, Position[]> _winPositions;
         
         public event Action<ColorType> PlayerWon;
 
@@ -91,7 +91,7 @@ namespace Checkers.Core
 
             if (chipToMove is not null && (chipToMove.Color == ActivePlayerColor))
             {
-                var allowedPositions = GetAllowedPositionsToMoveChip(chipToMove.Id);
+                List<Position> allowedPositions = GetAllowedPositionsToMoveChip(chipToMove.Id);
 
                 if (allowedPositions.Contains(positionToMove))
                 {
