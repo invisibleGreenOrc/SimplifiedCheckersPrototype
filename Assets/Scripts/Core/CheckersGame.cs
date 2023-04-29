@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Checkers.Core
 {
-    public class CheckersGame
+    public class CheckersGame : IGameRuleEventsProvider
     {
         private Board _board;
 
@@ -83,6 +83,8 @@ namespace Checkers.Core
             _board = new Board(_startChipsPosition);
 
             _board.ChipRemoved += OnChipRemoved;
+
+            var observer = new Observer(_board, this);
         }
 
         public bool TryMakeMove(int chipId, Position positionToMove)
@@ -95,7 +97,6 @@ namespace Checkers.Core
 
                 if (allowedPositions.Contains(positionToMove))
                 {
-                    // Сделать нормально
                     if (Math.Abs(chipToMove.Position.X - positionToMove.X) > 1)
                     {
                         var removedChipPosition = new Position((chipToMove.Position.X + positionToMove.X) / 2, (chipToMove.Position.Y + positionToMove.Y) / 2);

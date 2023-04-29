@@ -4,13 +4,15 @@ using System.Linq;
 
 namespace Checkers.Core
 {
-    public class Board
+    public class Board : IChipMovementEventsProvider
     {
         public int[,] Cells { get; private set; }
 
         public List<Chip> ChipsOnBoard { get; private set; }
 
         public event Action<int> ChipRemoved;
+
+        public event Action<int, Position> ChipMoved;
 
         public Board(List<Chip> chipsOnBoard)
         {
@@ -51,6 +53,7 @@ namespace Checkers.Core
             if (chip is not null && IsPositionInBoard(positionToMove))
             {
                 chip.Position = positionToMove;
+                ChipMoved?.Invoke(chip.Id, chip.Position);
             }
         }
 
