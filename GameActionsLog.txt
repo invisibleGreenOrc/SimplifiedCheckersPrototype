@@ -1,3 +1,0 @@
-ChipMoved 10 Checkers.Core.Position
-ChipMoved 14 Checkers.Core.Position
-ChipMoved 11 Checkers.Core.Position

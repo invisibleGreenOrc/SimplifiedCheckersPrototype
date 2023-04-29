@@ -73,7 +73,7 @@ namespace Checkers.Core
             }
         }
 
-        public void StartNewGame()
+        public void StartNewGame(bool logActions)
         {
             if (_board is not null)
             {
@@ -84,7 +84,10 @@ namespace Checkers.Core
 
             _board.ChipRemoved += OnChipRemoved;
 
-            var observer = new Observer(_board, this);
+            if (logActions)
+            {
+                var observer = new Observer(_board, this);
+            }
         }
 
         public bool TryMakeMove(int chipId, Position positionToMove)

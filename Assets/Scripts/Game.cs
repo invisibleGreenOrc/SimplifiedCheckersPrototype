@@ -39,6 +39,9 @@ namespace Checkers
 
         private PhysicsRaycaster _raycaster;
 
+        [SerializeField]
+        private bool _logActions = false;
+
         private void Start()
         {
             _raycaster = FindObjectOfType<PhysicsRaycaster>();
@@ -65,10 +68,15 @@ namespace Checkers
         private void StartGame()
         {
             _checkerGame = new CheckersGame();
-            _checkerGame.StartNewGame();
+            _checkerGame.StartNewGame(_logActions);
 
             _checkerGame.ChipRemoved += RemoveChip;
             _checkerGame.PlayerWon += CongratsPlayer;
+
+            if (false)
+            {
+                _raycaster.enabled = false;
+            }
 
             CreateBoard();
             CreateChips();

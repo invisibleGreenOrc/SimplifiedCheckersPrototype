@@ -32,5 +32,9 @@ namespace Checkers.Core
         {
             return !a.Equals(b);
         }
+        public override string ToString()
+        {
+            return $"{X} {Y}";
+        }
     }
 }

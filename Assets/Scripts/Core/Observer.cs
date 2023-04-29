@@ -9,6 +9,8 @@ namespace Checkers.Core
 
         private IGameRuleEventsProvider _gameRuleEventsProvider;
 
+        private string _filePath;
+
         public Observer(IChipMovementEventsProvider chipEventsProvider, IGameRuleEventsProvider gameRuleEventsProvider)
         {
             _chipEventsProvider = chipEventsProvider;
@@ -18,6 +20,10 @@ namespace Checkers.Core
             _chipEventsProvider.ChipRemoved += OnChipRemoved;
 
             _gameRuleEventsProvider.PlayerWon += OnPlayerWon;
+
+            _filePath = Path.ChangeExtension("GameActionsLog", "txt");
+
+            File.Delete(_filePath);
         }
 
         private void OnChipMoved(int chipId, Position newPosition)
@@ -43,9 +49,7 @@ namespace Checkers.Core
 
         private async Task SerializeAsync(string input)
         {
-            var path = Path.ChangeExtension("GameActionsLog", "txt");
-
-            await using (var fileStream = new FileStream(path, FileMode.Append))
+            await using (var fileStream = new FileStream(_filePath, FileMode.Append))
             {
                 await using (var streamWriter = new StreamWriter(fileStream))
                 {
