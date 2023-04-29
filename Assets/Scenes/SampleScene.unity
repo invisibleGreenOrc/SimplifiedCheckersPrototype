@@ -428,6 +428,9 @@ MonoBehaviour:
     Prefab: {fileID: 2828011909747291465, guid: 98313ec6cde49cf4683ce4d479743265, type: 3}
   _highlightMaterial: {fileID: 2100000, guid: bac5726f24c09d042b2d8b4a1e1acb4b, type: 2}
   _selectMaterial: {fileID: 2100000, guid: 85e557673fec4db4fb7ad6384d067e64, type: 2}
+  _logActions: 1
+  _gameMode: 1
+  _replayDelay: 2000
 --- !u!4 &1655979874
 Transform:
   m_ObjectHideFlags: 0

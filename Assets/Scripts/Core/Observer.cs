@@ -5,21 +5,17 @@ namespace Checkers.Core
 {
     public class Observer
     {
-        private IChipMovementEventsProvider _chipEventsProvider;
-
-        private IGameRuleEventsProvider _gameRuleEventsProvider;
+        private IGameEventsProvider _gameEventsProvider;
 
         private string _filePath;
 
-        public Observer(IChipMovementEventsProvider chipEventsProvider, IGameRuleEventsProvider gameRuleEventsProvider)
+        public Observer(IGameEventsProvider gameRuleEventsProvider)
         {
-            _chipEventsProvider = chipEventsProvider;
-            _gameRuleEventsProvider = gameRuleEventsProvider;
+            _gameEventsProvider = gameRuleEventsProvider;
 
-            _chipEventsProvider.ChipMoved += OnChipMoved;
-            _chipEventsProvider.ChipRemoved += OnChipRemoved;
-
-            _gameRuleEventsProvider.PlayerWon += OnPlayerWon;
+            _gameEventsProvider.ChipMoved += OnChipMoved;
+            _gameEventsProvider.ChipRemoved += OnChipRemoved;
+            _gameEventsProvider.PlayerWon += OnPlayerWon;
 
             _filePath = Path.ChangeExtension("GameActionsLog", "txt");
 
@@ -53,8 +49,8 @@ namespace Checkers.Core
             {
                 await using (var streamWriter = new StreamWriter(fileStream))
                 {
-                    streamWriter.AutoFlush = true;
                     await streamWriter.WriteLineAsync(input);
+                    streamWriter.Flush();
                 }
             }
         }

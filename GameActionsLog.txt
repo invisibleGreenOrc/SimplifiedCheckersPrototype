@@ -1,0 +1,65 @@
+ChipMoved 11 3 7
+ChipMoved 15 4 6
+ChipMoved 10 3 5
+ChipRemoved 10
+ChipMoved 15 2 4
+ChipRemoved 15
+ChipMoved 6 3 3
+ChipMoved 13 4 4
+ChipMoved 11 4 6
+ChipRemoved 11
+ChipMoved 14 3 7
+ChipMoved 7 2 6
+ChipRemoved 7
+ChipMoved 14 1 5
+ChipRemoved 14
+ChipMoved 2 2 6
+ChipMoved 13 3 5
+ChipRemoved 13
+ChipMoved 2 4 4
+ChipMoved 12 4 0
+ChipMoved 6 4 2
+ChipMoved 17 5 1
+ChipMoved 2 5 3
+ChipRemoved 6
+ChipMoved 17 3 3
+ChipRemoved 17
+ChipMoved 9 4 4
+ChipRemoved 2
+ChipMoved 18 4 2
+ChipMoved 9 5 5
+ChipRemoved 9
+ChipMoved 19 4 4
+ChipMoved 5 2 4
+ChipMoved 19 3 3
+ChipMoved 5 3 5
+ChipMoved 16 5 1
+ChipMoved 4 2 2
+ChipRemoved 4
+ChipMoved 19 1 1
+ChipRemoved 19
+ChipMoved 0 2 2
+ChipMoved 12 3 1
+ChipMoved 5 4 4
+ChipRemoved 0
+ChipMoved 12 1 3
+ChipRemoved 12
+ChipMoved 1 2 4
+ChipMoved 21 6 2
+ChipMoved 8 3 1
+ChipRemoved 8
+ChipMoved 18 2 0
+ChipMoved 5 5 3
+ChipRemoved 5
+ChipMoved 21 4 4
+ChipMoved 1 3 5
+ChipRemoved 1
+ChipMoved 21 2 6
+ChipMoved 3 1 5
+ChipMoved 21 1 7
+ChipMoved 3 2 4
+ChipMoved 16 4 2
+ChipMoved 3 3 3
+ChipRemoved 3
+PlayerWon Black
+ChipMoved 16 2 4

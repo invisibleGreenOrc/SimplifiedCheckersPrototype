@@ -42,6 +42,14 @@ namespace Checkers
         [SerializeField]
         private bool _logActions = false;
 
+        [SerializeField]
+        private GameMode _gameMode;
+
+        private IReplayer _replayer;
+
+        [SerializeField]
+        private int _replayDelay = 2000;
+
         private void Start()
         {
             _raycaster = FindObjectOfType<PhysicsRaycaster>();
@@ -56,13 +64,31 @@ namespace Checkers
                 _chipPrefabs.Add(prefab.Color, prefab.Prefab);
             }
 
-            StartGame();
+            switch (_gameMode)
+            {
+                case GameMode.Play:
+                    StartGame();
+                    break;
+                case GameMode.Replay:
+                    StartReplay();
+                    break;
+            }
         }
 
         private void OnDestroy()
         {
-            _checkerGame.ChipRemoved -= RemoveChip;
-            _checkerGame.PlayerWon -= CongratsPlayer;
+            if (_checkerGame is not null)
+            {
+                _checkerGame.ChipRemoved -= OnChipRemoved;
+                _checkerGame.PlayerWon -= OnPlayerWon;
+            }
+
+            if (_replayer is not null)
+            {
+                _replayer.ChipMoved -= OnChipMoved;
+                _replayer.ChipRemoved -= OnChipRemoved;
+                _replayer.PlayerWon -= OnPlayerWon;
+            }
         }
 
         private void StartGame()
@@ -70,18 +96,31 @@ namespace Checkers
             _checkerGame = new CheckersGame();
             _checkerGame.StartNewGame(_logActions);
 
-            _checkerGame.ChipRemoved += RemoveChip;
-            _checkerGame.PlayerWon += CongratsPlayer;
-
-            if (false)
-            {
-                _raycaster.enabled = false;
-            }
+            _checkerGame.ChipRemoved += OnChipRemoved;
+            _checkerGame.PlayerWon += OnPlayerWon;
 
             CreateBoard();
             CreateChips();
         }
 
+        private void StartReplay()
+        {
+            _checkerGame = new CheckersGame();
+            _checkerGame.StartNewGame();
+
+            _replayer = new FileReplayer("GameActionsLog.txt", _replayDelay);
+            _replayer.ChipMoved += OnChipMoved;
+            _replayer.ChipRemoved += OnChipRemoved;
+            _replayer.PlayerWon += OnPlayerWon;
+
+            _raycaster.enabled = false;
+
+            CreateBoard();
+            CreateChips();
+
+            _replayer.Start();
+        }
+         
         private void CreateBoard()
         {
             for (int x = 0; x < _checkerGame.BoardCells.GetLength(0); x++)
@@ -128,6 +167,14 @@ namespace Checkers
             ChipComponent chipToRemove = _chips.Where(chip => chip.Id == id).FirstOrDefault();
             _chips.Remove(chipToRemove);
             Destroy(chipToRemove.gameObject);
+        }
+
+        private void MoveChip(int id, Position position)
+        {
+            ChipComponent chip = _chips.Where(chip => chip.Id == id).FirstOrDefault();
+            CellComponent cell = _cells.Where(cell => cell.Coordinates == position).FirstOrDefault();
+
+            StartCoroutine(MoveToTarget(chip, new Vector3(cell.transform.position.x, 0.2f, cell.transform.position.z)));
         }
 
         private void OnClick(BaseClickComponent clickedComponent)
@@ -214,6 +261,22 @@ namespace Checkers
         private void CongratsPlayer(ColorType color)
         {
             Debug.Log($"Winning player - {color}");
+            _raycaster.enabled = false;
+        }
+
+        private void OnChipMoved(int chipId, Position position)
+        {
+            MoveChip(chipId, position);
+        }
+
+        private void OnChipRemoved(int chipId)
+        {
+            RemoveChip(chipId);
+        }
+
+        private void OnPlayerWon(ColorType color)
+        {
+            CongratsPlayer(color);
         }
     }
 }

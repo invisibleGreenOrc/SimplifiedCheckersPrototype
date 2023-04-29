@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Checkers.Core
 {
-    public class Board : IChipMovementEventsProvider
+    public class Board
     {
         public int[,] Cells { get; private set; }
 

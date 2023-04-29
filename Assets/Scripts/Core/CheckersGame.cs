@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Checkers.Core
 {
-    public class CheckersGame : IGameRuleEventsProvider
+    public class CheckersGame : IGameEventsProvider
     {
         private Board _board;
 
@@ -16,6 +16,8 @@ namespace Checkers.Core
         
         public event Action<ColorType> PlayerWon;
 
+        public event Action<int, Position> ChipMoved;
+        
         public event Action<int> ChipRemoved;
 
         public ColorType ActivePlayerColor { get; private set; } = ColorType.White;
@@ -73,20 +75,22 @@ namespace Checkers.Core
             }
         }
 
-        public void StartNewGame(bool logActions)
+        public void StartNewGame(bool logActions = false)
         {
             if (_board is not null)
             {
                 _board.ChipRemoved -= OnChipRemoved;
+                _board.ChipMoved -= OnChipMoved;
             }
 
             _board = new Board(_startChipsPosition);
 
             _board.ChipRemoved += OnChipRemoved;
+            _board.ChipMoved += OnChipMoved;
 
             if (logActions)
             {
-                var observer = new Observer(_board, this);
+                var observer = new Observer(this);
             }
         }
 
@@ -100,6 +104,7 @@ namespace Checkers.Core
 
                 if (allowedPositions.Contains(positionToMove))
                 {
+
                     if (Math.Abs(chipToMove.Position.X - positionToMove.X) > 1)
                     {
                         var removedChipPosition = new Position((chipToMove.Position.X + positionToMove.X) / 2, (chipToMove.Position.Y + positionToMove.Y) / 2);
@@ -155,6 +160,11 @@ namespace Checkers.Core
         private void PassTurnToNextPlayer()
         {
             ActivePlayerColor = (ColorType)(((int)ActivePlayerColor + 1) % 2);
+        }
+
+        private void OnChipMoved(int chipId, Position position)
+        {
+            ChipMoved?.Invoke(chipId, position);
         }
 
         private void OnChipRemoved(int chipId)
